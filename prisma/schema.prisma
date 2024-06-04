@@ -15,6 +15,8 @@ model User {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   bankAccounts BankAccount[]
+  categories   Category[]
+  transactions Transaction[]
 
   @@map("users")
 }
@@ -32,13 +34,54 @@ model BankAccount {
   idUser          String          @db.Uuid
   descBankAccount String          @map("desc_bank_account")
   initialBalance  Float           @map("initial_balance")
-  currentBalance  Float           @map("current_balance")
+  currentBalance  Float?          @map("current_balance")
   accountType     BankAccountType @map("account_type")
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
   color           String
+  transactions    Transaction[]
 
-  user User @relation(fields: [idUser], references: [id])
+  user User @relation(fields: [idUser], references: [id], onDelete: Cascade)
 
   @@map("bank_accounts")
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+
+  @@map("category_types")
+}
+
+model Category {
+  idCategory   String        @id @default(uuid()) @map("id_category") @db.Uuid
+  idUser       String        @map("id_user") @db.Uuid
+  descCategory String        @map("desc_category")
+  icon         String
+  type         CategoryType
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  transactions Transaction[]
+
+  user User @relation(fields: [idUser], references: [id], onDelete: Cascade)
+
+  @@map("categories")
+}
+
+model Transaction {
+  idTransaction    String       @id @default(uuid()) @db.Uuid
+  idUser           String       @map("id_user") @db.Uuid
+  idCategory       String       @map("id_category") @db.Uuid
+  idBankAccount    String       @map("id_bank_account") @db.Uuid
+  desc_transaction String       @map("desc_transaction")
+  amount           Float
+  type             CategoryType
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+
+  user        User        @relation(fields: [idUser], references: [id], onDelete: Cascade)
+  category    Category    @relation(fields: [idCategory], references: [idCategory], onDelete: Cascade)
+  bankAccount BankAccount @relation(fields: [idBankAccount], references: [idBankAccount], onDelete: Cascade)
+
+  @@map("transactions")
 }
