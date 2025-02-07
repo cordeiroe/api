@@ -12,7 +12,7 @@ export class UsersService {
     const { name, email, password } = createUserDto;
 
     const isEmailAlreadyInUse = await this.prismaService.user.findUnique({
-      where: { email },
+      where: { email }
     });
 
     if (!isEmailAlreadyInUse) {
@@ -31,7 +31,7 @@ export class UsersService {
                 {
                   descCategory: 'Freelance',
                   icon: 'freelance',
-                  type: 'INCOME',
+                  type: 'INCOME'
                 },
                 { descCategory: 'Outro', icon: 'other', type: 'INCOME' },
                 // Expense
@@ -40,7 +40,7 @@ export class UsersService {
                 {
                   descCategory: 'Educação',
                   icon: 'education',
-                  type: 'EXPENSE',
+                  type: 'EXPENSE'
                 },
                 { descCategory: 'Lazer', icon: 'fun', type: 'EXPENSE' },
                 { descCategory: 'Mercado', icon: 'grocery', type: 'EXPENSE' },
@@ -48,14 +48,14 @@ export class UsersService {
                 {
                   descCategory: 'Transporte',
                   icon: 'transport',
-                  type: 'EXPENSE',
+                  type: 'EXPENSE'
                 },
                 { descCategory: 'Viagem', icon: 'travel', type: 'EXPENSE' },
-                { descCategory: 'Outro', icon: 'other', type: 'EXPENSE' },
-              ],
-            },
-          },
-        },
+                { descCategory: 'Outro', icon: 'other', type: 'EXPENSE' }
+              ]
+            }
+          }
+        }
       });
       return { message: 'Usuário criado!', name: user.name, email: user.email };
     }
