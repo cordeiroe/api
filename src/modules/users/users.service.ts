@@ -1,22 +1,22 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaService } from 'src/database/prisma.service';
-import { hash } from 'bcryptjs';
-import { Prisma } from '@prisma/client';
+import { ConflictException, Injectable } from '@nestjs/common'
+import { CreateUserDto } from './dto/create-user.dto'
+import { PrismaService } from 'src/database/prisma.service'
+import { hash } from 'bcryptjs'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { name, email, password } = createUserDto;
+    const { name, email, password } = createUserDto
 
     const isEmailAlreadyInUse = await this.prismaService.user.findUnique({
       where: { email }
-    });
+    })
 
     if (!isEmailAlreadyInUse) {
-      const hashPass = await hash(password, 12);
+      const hashPass = await hash(password, 12)
 
       const user = await this.prismaService.user.create({
         data: {
@@ -56,10 +56,25 @@ export class UsersService {
             }
           }
         }
-      });
-      return { message: 'Usuário criado!', name: user.name, email: user.email };
+      })
+      return {
+        message: 'Usuário criado!',
+        id: user.id,
+        name: user.name,
+        email: user.email
+      }
     }
 
-    throw new ConflictException('Email já está em uso.');
+    throw new ConflictException('Email já está em uso.')
+  }
+
+  async findByEmail(email: string) {
+    return this.prismaService.user.findUnique({
+      where: { email }
+    })
+  }
+
+  async getAllUsers() {
+    return this.prismaService.user.findMany()
   }
 }
